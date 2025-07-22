@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Form, UploadFile, File
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
 import os
 
 import base64, os
@@ -15,33 +16,40 @@ from langchain.prompts import ChatPromptTemplate
 
 app = FastAPI()
 
+origins = [
+    "http://localhost:5173"
+]
+
 # Allow all origins (not in production)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins = ["*"],   # allows all orgins
+    allow_origins = origins,  
     allow_credentials = True,
-    allow_methods = ["*"],   # allow all methods (GET, POST etc.)
-    allow_headers = ["*"],   # allow all headers
+    allow_methods = ["*"],
+    allow_headers = ["*"],
 )
 
 
 # save file to a docs folder
-@app.post("/readfile/")
-async def read_upload_file(file: UploadFile = File(...), user_prompt: str = None):
+@app.post("/getquiz/")
+async def get_quiz(file: UploadFile = File(...), user_prompt: str = None):
 
     file_path = f"docs/{file.filename}"
 
     with open(file_path, "wb") as f:
-        f.write(file.file.read())
+        f.write(await file.read())
 
-    fileContent = read_file(file_path)
+    fileContent = await read_file(file_path)
 
     # Delete the uploaded file
     if os.path.exists(file_path):
         os.remove(file_path)
 
+    if user_prompt is None:
+        user_prompt = "Generate mcqs based on this data : "    
+
     # generate_quiz()
-    generated_mcqs = generate_quiz(fileContent, user_prompt)
+    generated_mcqs = await generate_quiz(fileContent, user_prompt)
 
     result = eval(str(generated_mcqs).replace("\n", "").replace("```", "").replace("json", ""))
 
@@ -54,7 +62,7 @@ async def read_upload_file(file: UploadFile = File(...), user_prompt: str = None
 model_id = "prebuilt-tax.us.w2"
 document_ai_client = client()
 
-def read_file(filepath: str):
+async def read_file(filepath: str):
 
     if is_file_or_url(filepath) == "url":
 
@@ -92,7 +100,7 @@ llm = AzureChatOpenAI(
     api_version="2025-01-01-preview",
 )
 
-def generate_quiz(filecontent: str, userprompt: str):
+async def generate_quiz(filecontent: str, userprompt: str):
 
     final_prompt = userprompt + "Generate mcqs based on this data : " + filecontent
 
