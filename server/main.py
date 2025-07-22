@@ -17,7 +17,7 @@ from langchain.prompts import ChatPromptTemplate
 app = FastAPI()
 
 origins = [
-    "http://localhost:5173"
+    "https://quiz-maker-gamma-virid.vercel.app/"
 ]
 
 # Allow all origins (not in production)
