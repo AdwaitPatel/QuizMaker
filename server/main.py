@@ -43,7 +43,9 @@ async def read_upload_file(file: UploadFile = File(...), user_prompt: str = None
     # generate_quiz()
     generated_mcqs = generate_quiz(fileContent, user_prompt)
 
-    return generated_mcqs
+    result = eval(str(generated_mcqs).replace("\n", "").replace("```", "").replace("json", ""))
+
+    return result
 
 
 # ======================= Read pdf logic =======================
@@ -96,7 +98,19 @@ def generate_quiz(filecontent: str, userprompt: str):
 
     prompt = ChatPromptTemplate(
         [
-            ("system", ("You are a teacher who generate quizzes or multiple choice questions based on data students give you, so generate atleast 15 mcqs. And always give the answers to all question at the end.")),
+            ("system", ("""
+                        You are a teacher who generate quizzes or multiple choice questions based on data students give you, so generate atleast 15 mcqs. And always give the answers to all question at the end. Make sure to return the content response like this only everytime :
+                        
+                            "questions": [
+                                
+                                    "question": "",
+                                    "options": ["", "", "", ""],
+                                    "answer": ""
+                                ,
+                                // and so on...
+                            
+                        basically return me everything in json format
+                        """)),
             ("user", "{user_input}"),
         ]
     )
