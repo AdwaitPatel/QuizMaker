@@ -1,4 +1,4 @@
-# QuizMaker
+# QuizMaker => https://quiz-maker-gamma-virid.vercel.app/
 
 A web application that generates quizzes from uploaded documents using AI.
 
