@@ -17,7 +17,7 @@ from langchain.prompts import ChatPromptTemplate
 app = FastAPI()
 
 origins = [
-    "https://quiz-maker-gamma-virid.vercel.app/"
+    "https://quiz-maker-gamma-virid.vercel.app",
 ]
 
 # Allow all origins (not in production)
@@ -40,16 +40,19 @@ async def get_quiz(file: UploadFile = File(...), user_prompt: str = None):
         f.write(await file.read())
 
     fileContent = await read_file(file_path)
+    print("File content read successfully.")
 
     # Delete the uploaded file
     if os.path.exists(file_path):
         os.remove(file_path)
+    print("File deleted successfully.")
 
     if user_prompt is None:
         user_prompt = "Generate mcqs based on this data : "    
 
     # generate_quiz()
     generated_mcqs = await generate_quiz(fileContent, user_prompt)
+    print("Quiz generated successfully.")
 
     result = eval(str(generated_mcqs).replace("\n", "").replace("```", "").replace("json", ""))
 
