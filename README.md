@@ -21,7 +21,7 @@ A web application that generates quizzes from uploaded documents using AI.
 
 - Node.js
 - Python 3.13+
-- Azure AI and OpenAI API keys
+- Azure Document Intelligence AI and OpenAI API keys
 
 ### Installation
 
@@ -51,7 +51,7 @@ A web application that generates quizzes from uploaded documents using AI.
    ```
    cd server
    source myenv/bin/activate
-   python main.py
+   uvicorn main:app --reload
    ```
 
 2. Start the frontend development server:
@@ -66,6 +66,6 @@ A web application that generates quizzes from uploaded documents using AI.
 ## Usage
 
 1. Upload a document through the web interface
-2. The system will analyze the document using Azure AI
-3. AI generates relevant quiz questions based on the content
+2. The system will analyze the document using Azure Document Intelligence AI
+3. AI generates relevant quiz questions based on the content via Azure openAI model o4-mini
 4. Review and use the generated quiz
